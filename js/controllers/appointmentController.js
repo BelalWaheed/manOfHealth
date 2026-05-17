@@ -16,7 +16,7 @@ export function processAppointmentBooking(patientId, doctorId, date, time) {
     const appointment = new Appointment(generateId(), patientId, doctorId, date, time);
     AppState.clinic.appointments.push(appointment);
     
-    doctor.removeSlot(date, time); // Atomically remove available slot
+    doctor.removeSlot(date, time);
     AppState.save();
     
     return appointment;

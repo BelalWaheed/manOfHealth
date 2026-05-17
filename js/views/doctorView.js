@@ -1,5 +1,5 @@
 import { AppState } from '../state/AppState.js';
-import {  formatTimeAMPM } from '../utils/helpers.js';
+import { formatTimeAMPM } from '../utils/helpers.js';
 import { renderView } from './router.js';
 
 export function renderDoctorDashboard(container) {
@@ -25,7 +25,7 @@ export function renderDoctorDashboard(container) {
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Manage Availability</h3>
                 
-                <form id="add-slot-form" class="space-y-4 mb-6">
+                <form id="add-slot-form" class="space-y-4 mb-6" novalidate>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -63,8 +63,8 @@ export function renderDoctorDashboard(container) {
                 <div class="space-y-4 max-h-[500px] overflow-y-auto">
                     ${myAppointments.length === 0 ? '<div class="text-center py-8 text-gray-500 italic">No appointments scheduled.</div>' : ''}
                     ${myAppointments.map(a => {
-                        const patient = AppState.clinic.patients.find(p => p.id === a.patientId);
-                        return `
+        const patient = AppState.clinic.patients.find(p => p.id === a.patientId);
+        return `
                         <div class="p-4 border border-blue-100 rounded-lg bg-blue-50/50 relative">
                             <span class="absolute top-4 right-4 bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">${a.status}</span>
                             <p class="font-bold text-gray-900 text-lg mb-1">${a.date} at ${formatTimeAMPM(a.time)}</p>
@@ -74,7 +74,7 @@ export function renderDoctorDashboard(container) {
                             </p>
                         </div>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div>
             </div>
         </div>
@@ -87,19 +87,21 @@ export function renderDoctorDashboard(container) {
         e.preventDefault();
         const errorEl = document.getElementById('slot-error');
         errorEl.classList.add('hidden');
-        
+
         try {
             const date = document.getElementById('slot-date').value;
             const time = document.getElementById('slot-time').value;
-            
+
+            if (!date || !time) throw new Error("Please select both a date and a time.");
+
 
             const slotDateTime = new Date(date + 'T' + time);
             const now = new Date();
             if (slotDateTime <= now) throw new Error("Cannot add slots in the past.");
-            
+
             doctor.addSlot(date, time);
             AppState.save();
-            renderView('Doctor'); // Refresh UI
+            renderView('Doctor');
         } catch (error) {
             console.error(error);
             errorEl.textContent = error.message;
@@ -115,7 +117,7 @@ export function renderDoctorDashboard(container) {
                 doctor.removeSlot(date, time);
                 AppState.save();
                 renderView('Doctor');
-            } catch(error) {
+            } catch (error) {
                 console.error(error);
             }
         });

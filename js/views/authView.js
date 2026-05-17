@@ -20,10 +20,18 @@ export function renderAuthScreen(container) {
                     <button id="mode-login" class="flex-1 text-sm font-semibold bg-gray-100 py-1 rounded transition">Login</button>
                     <button id="mode-register" class="flex-1 text-sm font-semibold text-gray-500 hover:bg-gray-50 py-1 rounded transition">Register</button>
                 </div>
-                <form id="patient-form" class="space-y-4">
-                    <div>
+                <form id="patient-form" class="space-y-4" novalidate>
+                    <div id="patient-name-container" class="hidden">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Your Full Name</label>
-                        <input type="text" id="patient-name" placeholder="e.g. John Doe" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="patient-name" placeholder="e.g. Feras Mohammed" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="patient-phone" placeholder="e.g. 0501234567" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="patient-pass" placeholder="••••••••" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
                     </div>
                     <div id="patient-error" class="hidden text-sm text-red-600 bg-red-50 p-2 rounded"></div>
                     <button type="submit" id="patient-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition shadow-sm">Log In</button>
@@ -32,10 +40,14 @@ export function renderAuthScreen(container) {
 
 
             <div id="doctor-auth-section" class="hidden fade-in">
-                <form id="doctor-form" class="space-y-4">
+                <form id="doctor-form" class="space-y-4" novalidate>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Doctor Name</label>
-                        <input type="text" id="doctor-name" placeholder="e.g. Gregory House" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border focus:ring-blue-500 focus:border-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="doctor-phone" placeholder="e.g. 0501234567" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="doctor-pass" placeholder="••••••••" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
                     </div>
                     <div id="doctor-error" class="hidden text-sm text-red-600 bg-red-50 p-2 rounded"></div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition shadow-sm">Log In</button>
@@ -44,14 +56,14 @@ export function renderAuthScreen(container) {
 
 
             <div id="admin-auth-section" class="hidden fade-in">
-                <form id="admin-form" class="space-y-4">
+                <form id="admin-form" class="space-y-4" novalidate>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                        <input type="text" id="admin-user" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="admin-user" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="admin-pass" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border focus:ring-blue-500 focus:border-blue-500">
+                        <input type="password" id="admin-pass" class="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border ">
                     </div>
                     <div id="admin-error" class="hidden text-sm text-red-600 bg-red-50 p-2 rounded"></div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition shadow-sm">Log In</button>
@@ -87,12 +99,14 @@ export function renderAuthScreen(container) {
         patientMode = 'login';
         document.getElementById('mode-login').className = 'flex-1 text-sm font-semibold bg-gray-100 py-1 rounded transition';
         document.getElementById('mode-register').className = 'flex-1 text-sm font-semibold text-gray-500 hover:bg-gray-50 py-1 rounded transition';
+        document.getElementById('patient-name-container').classList.add('hidden');
         document.getElementById('patient-submit-btn').textContent = 'Log In';
     });
     document.getElementById('mode-register').addEventListener('click', () => {
         patientMode = 'register';
         document.getElementById('mode-register').className = 'flex-1 text-sm font-semibold bg-gray-100 py-1 rounded transition';
         document.getElementById('mode-login').className = 'flex-1 text-sm font-semibold text-gray-500 hover:bg-gray-50 py-1 rounded transition';
+        document.getElementById('patient-name-container').classList.remove('hidden');
         document.getElementById('patient-submit-btn').textContent = 'Create Account';
     });
 
@@ -102,9 +116,17 @@ export function renderAuthScreen(container) {
         const errorEl = document.getElementById('patient-error');
         errorEl.classList.add('hidden');
         try {
-            const name = document.getElementById('patient-name').value;
-            if (!name) throw new Error("Please enter your name.");
-            const patient = patientMode === 'login' ? processPatientLogin(name) : processPatientCreation(name);
+            const phone = document.getElementById('patient-phone').value;
+            const password = document.getElementById('patient-pass').value;
+            
+            let patient;
+            if (patientMode === 'login') {
+                patient = processPatientLogin(phone, password);
+            } else {
+                const name = document.getElementById('patient-name').value;
+                patient = processPatientCreation(name, phone, password);
+            }
+            
             AppState.currentUser = patient;
             AppState.save();
             renderView('Patient');
@@ -119,9 +141,9 @@ export function renderAuthScreen(container) {
         const errorEl = document.getElementById('doctor-error');
         errorEl.classList.add('hidden');
         try {
-            const name = document.getElementById('doctor-name').value;
-            if (!name) throw new Error("Please enter doctor name.");
-            const doctor = processDoctorLogin(name);
+            const phone = document.getElementById('doctor-phone').value;
+            const password = document.getElementById('doctor-pass').value;
+            const doctor = processDoctorLogin(phone, password);
             AppState.currentUser = doctor;
             AppState.save();
             renderView('Doctor');

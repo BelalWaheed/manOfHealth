@@ -1,10 +1,10 @@
 import { User } from './User.js';
 
 export class Doctor extends User {
-    constructor(id, name, specialty) {
-        super(id, name, 'Doctor');
+    constructor(id, name, phone, specialty, password) {
+        super(id, name, phone, 'Doctor', password);
         this.specialty = specialty;
-        this.availableSlots = []; // Array of objects: { date: 'YYYY-MM-DD', time: 'HH:MM' }
+        this.availableSlots = [];
     }
     
     addSlot(date, time) {

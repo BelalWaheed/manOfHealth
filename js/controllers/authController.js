@@ -7,13 +7,18 @@ export function processAdminLogin(username, password) {
     throw new Error('Invalid Admin credentials.');
 }
 
-export function processDoctorLogin(name) {
+export function processDoctorLogin(phone, password) {
+    if (!phone || phone.trim() === '') throw new Error("Please enter phone number.");
+    if (!password) throw new Error("Please enter password.");
+
     const doc = AppState.clinic.doctors.find(d => 
-        d.name.toLowerCase() === name.toLowerCase() || 
-        d.name.toLowerCase() === `dr. ${name.toLowerCase()}`
+        d.phone === phone.trim() && 
+        d.password === password
     );
+
     if (!doc) {
-        throw new Error('Doctor not found in the system. Please ask an Admin to onboard you.');
+        throw new Error('Invalid phone number or password. Please check your credentials.');
     }
+
     return doc;
 }
